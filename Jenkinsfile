@@ -3,14 +3,21 @@ pipeline {
 
     environment {
         REPO_URL = 'https://github.com/zuwzuw/J-store.git' // URL репозитория
-        
     }
 
     stages {
         stage('Clone') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'main', url: "${REPO_URL}"
+                // Используем PowerShell для клонирования репозитория
+                powershell """
+                    if (-Not (Test-Path .git)) {
+                        git clone ${REPO_URL} .
+                    } else {
+                        git fetch --all
+                        git reset --hard origin/main
+                    }
+                """
                 echo 'Repository cloned successfully!'
             }
         }
@@ -18,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker containers...'
-                sh 'docker-compose build'
+                powershell 'docker-compose build'
                 echo 'Build completed successfully!'
             }
         }
@@ -26,7 +33,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'pytest tests/' // Обновите путь, если ваши тесты находятся в другом месте
+                powershell 'pytest tests/' // Убедитесь, что pytest установлен и путь указан верно
                 echo 'Tests executed successfully!'
             }
         }
@@ -34,7 +41,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                sh 'docker-compose up -d'
+                powershell 'docker-compose up -d'
                 echo 'Application deployed successfully!'
             }
         }
