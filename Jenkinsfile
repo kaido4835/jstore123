@@ -31,13 +31,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                // Убедитесь, что Python и pytest установлены
-                powershell """
-                    python --version
-                    pip install pytest
-                    pytest tests/
-                """
+                echo 'Running tests inside Docker container...'
+                powershell 'docker exec flask_app pytest tests/'
                 echo 'Tests executed successfully!'
             }
         }
