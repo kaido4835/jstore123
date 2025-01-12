@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/zuwzuw/J-store.git' // URL репозитория
+        REPO_URL = 'https://github.com/kaido4835/jstore123.git' // URL репозитория
     }
 
     stages {
         stage('Clone') {
             steps {
                 echo 'Cloning repository...'
-                // Используем PowerShell для клонирования репозитория
                 powershell """
                     if (-Not (Test-Path .git)) {
                         git clone ${REPO_URL} .
@@ -33,7 +32,12 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                powershell 'pytest tests/' // Убедитесь, что pytest установлен и путь указан верно
+                // Убедитесь, что Python и pytest установлены
+                powershell """
+                    python --version
+                    pip install pytest
+                    pytest tests/
+                """
                 echo 'Tests executed successfully!'
             }
         }
