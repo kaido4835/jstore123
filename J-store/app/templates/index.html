@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Our Latest Products</h2>    
+
+{% if products %}
+    <h3>New Products</h3>
+    <div class="product-list">
+        {% for p in products %}
+            <div class="product-item">
+                <a href="{{ url_for('main_bp.product_detail', product_id=p.id) }}">
+                    <img src="{{ url_for('static', filename='uploads/' + p.image_url) if p.image_url else url_for('static', filename='uploads/default.jpg') }}" alt="{{ p.name }}" style="max-width: 150px; max-height: 150px;">
+                    {{ p.name }} - {{ p.price }} UZS
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No products yet.</p>
+{% endif %}
+{% endblock %}

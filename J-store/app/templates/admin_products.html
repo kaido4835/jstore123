@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin: Products</h2>
+
+{% if mode == 'add' %}
+<h3>Add Product</h3>
+<div class="form-container">
+    <div class="form-left">
+        <form method="POST" action="{{ url_for('admin_bp.add_product') }}" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <p>{{ form.name.label }}<br>{{ form.name }}</p>
+            <p>{{ form.description.label }}<br>{{ form.description }}</p>
+            <p>{{ form.price.label }}<br>{{ form.price }}</p>
+            <p>{{ form.category.label }}<br>{{ form.category }}</p>
+            <p>{{ form.color.label }}<br>{{ form.color }}</p>
+            <p>{{ form.material.label }}<br>{{ form.material }}</p>
+            <p>{{ form.stock_quantity.label }}<br>{{ form.stock_quantity }}</p>
+            <p>
+                {{ form.image.label }}<br>
+                <input type="file" id="product-image" name="image" onchange="previewImage(event)">
+            </p>
+            <button type="submit">Save</button>
+        </form>
+    </div>
+    <div class="form-right">
+        <h3>Preview:</h3>
+        <img id="image-preview" src="#" alt="Image Preview" style="display: none; max-width: 300px; height: auto; border: 1px solid #ccc; padding: 5px;">
+    </div>
+</div>
+
+{% elif mode == 'edit' %}
+<h3>Edit Product</h3>
+<form method="POST" action="{{ url_for('admin_bp.edit_product', product_id=product.id) }}" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>{{ form.name.label }}<br>{{ form.name }}</p>
+    <p>{{ form.description.label }}<br>{{ form.description }}</p>
+    <p>{{ form.price.label }}<br>{{ form.price }}</p>
+    <p>{{ form.category.label }}<br>{{ form.category }}</p>
+    <p>{{ form.color.label }}<br>{{ form.color }}</p>
+    <p>{{ form.material.label }}<br>{{ form.material }}</p>
+    <p>{{ form.stock_quantity.label }}<br>{{ form.stock_quantity }}</p>
+    <p>{{ form.image.label }} {{ form.image }}</p>
+    <button type="submit">Save</button>
+</form>
+{% else %}
+<h3>Product List</h3>
+<a href="{{ url_for('admin_bp.add_product') }}">Add Product</a>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Actions</th>
+    </tr>
+    {% for p in products %}
+    <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.price }}</td>
+        <td>{{ p.category }}</td>
+        <td>
+            <a href="{{ url_for('admin_bp.edit_product', product_id=p.id) }}">Edit</a> | 
+            <form action="{{ url_for('admin_bp.delete_product', product_id=p.id) }}" method="POST" style="display:inline;">
+                <button type="submit" onclick="return confirm('Delete product?');">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const previewImage = (event) => {
+        const preview = document.getElementById('image-preview');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+        }
+    };
+
+    document.getElementById("form-image").addEventListener("change", previewImage);
+</script>
+{% endblock %}
